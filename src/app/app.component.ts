@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { sampleData } from './datasource';
-import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService,FilterService} from '@syncfusion/ej2-angular-treegrid';
+import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService,FilterService,SortService} from '@syncfusion/ej2-angular-treegrid';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService ]
+  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService,SortService ]
 })
 export class AppComponent implements OnInit {
   title = 'AngualarSyncFusion';
@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
   public allowRowDragAndDrop : boolean = true;
   public selectOptions!: Object;
   public filterSettings!: Object;
-
+  public sortSettings!: Object;
 
   ngOnInit(): void {
     this.data = sampleData;
