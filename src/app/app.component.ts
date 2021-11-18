@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { sampleData } from './datasource';
-import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService} from '@syncfusion/ej2-angular-treegrid';
+import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService,FilterService} from '@syncfusion/ej2-angular-treegrid';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [ RowDDService, SelectionService,ColumnChooserService ]
+  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService ]
 })
 export class AppComponent implements OnInit {
   title = 'AngualarSyncFusion';
@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
   public editparams!: Object;
   public allowRowDragAndDrop : boolean = true;
   public selectOptions!: Object;
+  public filterSettings!: Object;
 
 
   ngOnInit(): void {
@@ -34,6 +35,7 @@ export class AppComponent implements OnInit {
     this.editparams = { params: { popupHeight: '300px' }};
     this.pageSettings = { pageCount: 5};
     this.allowRowDragAndDrop = true;
+    this.filterSettings = { type: 'FilterBar', hierarchyMode: 'Parent', mode: 'Immediate' };
   }
 
 }

@@ -1,4 +1,4 @@
-<ejs-treegrid  [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' [pageSettings]='pageSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions' [showColumnChooser]='true'  [frozenRows]='3'>
+<ejs-treegrid  [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' allowFiltering='true' [pageSettings]='pageSettings' [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions' [showColumnChooser]='true'  [frozenRows]='3'>
   <e-columns>
       <e-column field='taskID' headerText='Task ID' textAlign='Right' width='30' isPrimaryKey='true' [validationRules]='orderidrules'></e-column>
       <e-column field='taskName' headerText='Task Name' textAlign='Left' width='200' [validationRules]='customeridrules'></e-column>
