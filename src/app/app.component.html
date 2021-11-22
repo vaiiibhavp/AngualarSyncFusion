@@ -1,3 +1,8 @@
+<ul style="position: absolute;z-index: 10;left: 44%;margin: 10px 0;list-style: none;padding: 0;">
+  <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
+  <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
+  <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
+</ul>
 <ejs-treegrid  [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' allowSorting='true' allowFiltering='true' [pageSettings]='pageSettings' [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions' [showColumnChooser]='true'  [frozenRows]='3'>
   <e-columns>
       <e-column field='taskID' headerText='Task ID' textAlign='Right' width='40' isPrimaryKey='true' [validationRules]='orderidrules'></e-column>
@@ -5,4 +10,5 @@
       <e-column field='startDate' headerText='Start Date' textAlign='Right' format='yMd' width='90' editType='datepickeredit' format='yMd'></e-column>
       <e-column field='duration' headerText='Duration' textAlign='Right' width='80'></e-column>
   </e-columns>
-  </ejs-treegrid>
+</ejs-treegrid>
+
