@@ -6,6 +6,11 @@
 </div>[frozenRows]='3' -->
 
 <div class="control-section">
+  <ul class="checkul">
+    <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
+    <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
+    <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
+  </ul>
   <ejs-treegrid  #treegrid [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' allowSorting='true' allowFiltering='true' [pageSettings]='pageSettings' 
   [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions'
   [showColumnChooser]='true' [contextMenuItems]='contextMenuItems' (contextMenuOpen)="contextMenuOpen($event)" (contextMenuClick)="contextMenuClick($event)">

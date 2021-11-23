@@ -8,3 +8,27 @@
 @import '../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-grids/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-treegrid/styles/material.css';
+
+.checkul{
+    position: absolute;z-index: 10;left: 44%;margin: 10px 0;list-style: none;padding: 0;
+}
+.checkli{
+    display: inline-block;
+    padding: 0 10px;
+}
+.e-grid .e-gridheader{
+    padding-right: 0;
+}
+
+@media(max-width:600px){
+    .e-toolbar .e-toolbar-items {
+        min-height: 75px !important;
+    }
+    .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-left, .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-center, .e-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-right{
+        height: auto !important;
+    }
+    .checkul{
+        left: 3%;
+        top: 42px;
+    }
+}
