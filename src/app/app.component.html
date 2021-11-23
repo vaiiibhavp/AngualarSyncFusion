@@ -1,8 +1,20 @@
-<ejs-treegrid  [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' allowSorting='true' allowFiltering='true' [pageSettings]='pageSettings' [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions' [showColumnChooser]='true'  [frozenRows]='3'>
-  <e-columns>
-      <e-column field='taskID' headerText='Task ID' textAlign='Right' width='40' isPrimaryKey='true' [validationRules]='orderidrules'></e-column>
+<!-- <div class="contextmenu-section">
+  <div id="contextmenu-control">
+      <div id="contextmenutarget">Column Header</div>
+      <ejs-contextmenu #contextmenu target='#contextmenutarget' [items]='menuItems'>Column Header</ejs-contextmenu>
+  </div>
+</div>[frozenRows]='3' -->
+
+<div class="control-section">
+  <ejs-treegrid  #treegrid [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' allowSorting='true' allowFiltering='true' [pageSettings]='pageSettings' 
+  [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions'
+  [showColumnChooser]='true' [contextMenuItems]='contextMenuItems' (contextMenuOpen)="contextMenuOpen($event)" (contextMenuClick)="contextMenuClick($event)">
+    <e-columns >
+      <e-column field='{{column.field}}' headerText='{{column.headerText}}'  textAlign='{{column.textAlign}}' width='{{column.width}}' isPrimaryKey='{{column.isPrimaryKey}}' [validationRules]='column.validationRules' format='{{column.format}}' editType ='{{column.editType}}' *ngFor="let column of columns"></e-column>
+      <!-- <e-column field='taskID' headerText='Task ID'  textAlign='Right' width='40' isPrimaryKey='true' [validationRules]='orderidrules'></e-column>
       <e-column field='taskName' headerText='Task Name' textAlign='Left' width='200' [validationRules]='customeridrules'></e-column>
-      <e-column field='startDate' headerText='Start Date' textAlign='Right' format='yMd' width='90' editType='datepickeredit' format='yMd'></e-column>
-      <e-column field='duration' headerText='Duration' textAlign='Right' width='80'></e-column>
-  </e-columns>
+      <e-column field='startDate' headerText='Start Date' textAlign='Right' format='yMd' width='90' editType='datepickeredit'></e-column>
+      <e-column field='duration' headerText='Duration' textAlign='Right' width='80'></e-column> -->
+    </e-columns>
   </ejs-treegrid>
+</div>
