@@ -1,19 +1,35 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { sampleData } from './datasource';
-import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService,FilterService,SortService} from '@syncfusion/ej2-angular-treegrid';
+import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService} from '@syncfusion/ej2-angular-treegrid';
 import { getValue, isNullOrUndefined } from '@syncfusion/ej2-base';
 import { BeforeOpenCloseEventArgs } from '@syncfusion/ej2-inputs';
 import { ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/ej2-angular-navigations';
-
+import { DialogComponent, ButtonPropsModel } from '@syncfusion/ej2-angular-popups';
+import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService,SortService ]
+  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService ]
 })
 export class AppComponent implements OnInit {
   title = 'AngualarSyncFusion';
+
+  columnform = new FormGroup({})
+
+  constructor(){
+    this.columnform = new FormGroup({
+      column_name : new FormControl('',[Validators.required]),
+      column_type : new FormControl('',[Validators.required]),
+      column_width : new FormControl('',[Validators.required]),
+      column_font_size : new FormControl('',[Validators.required]),
+      column_font_color : new FormControl('',Validators.required),
+      column_background_color : new FormControl('',Validators.required),
+      column_alignment : new FormControl('',Validators.required),
+    })
+  }
 
   public data: Object[] = [];
   public editSettings!: Object;
@@ -28,36 +44,63 @@ export class AppComponent implements OnInit {
   public filterSettings!: Object;
   public sortSettings!: Object;
   public contextMenuItems!: Object;
-
+  headerText = ''
+  public columns = [
+    { field: 'taskID', headerText: 'Task ID', textAlign:'Right', width:'40', fontSize: '200', format:'',editType:'' },
+    { field: 'taskName', headerText: 'Task Name', textAlign:'Left', width:'200', format:'', editType:'stringedit'},
+    { field: 'startDate', headerText: 'Start Date', textAlign:'Right', format:'yMd',width:'90', validationRules:'',editType:'datepickeredit'},
+    { field: 'duration', headerText: 'Duration', textAlign:'Right', format:'',width:'80', validationRules:'',editType:'stringedit'}
+  ];
   // @ViewChild('contextmenu')
   //   public contextmenu!: ContextMenuComponent;
 
   @ViewChild('treegrid')
-    public treegrid!: TreeGridComponent;
+  public treegrid!: TreeGridComponent;
 
-    columns = [
-      { field: 'taskID', headerText: 'Task ID', textAlign:'Right', width:'40', format:'', isPrimaryKey:'true', validationRules:'orderidrules',editType:'' },
-      { field: 'taskName', headerText: 'Task Name', textAlign:'Left', width:'200', format:'',isPrimaryKey:'false', validationRules:'customeridrules', editType:''},
-      { field: 'startDate', headerText: 'Start Date', textAlign:'Right', format:'yMd',width:'90', isPrimaryKey:'false', validationRules:'',editType:'datepickeredit'},
-      { field: 'duration', headerText: 'Duration', textAlign:'Right', format:'',width:'80', isPrimaryKey:'false', validationRules:'',editType:''}
-    ];
+  @ViewChild('Dialog')
+  public Dialog!: DialogComponent;
 
-    // public menuItems: MenuItemModel[] = [
-    //   {
-    //       text: 'Edit Column',
-    //       iconCss: 'e-cm-icons e-edit',
-          
-    //   },
-    //   {
-    //       text: 'New Column',
-    //       iconCss: 'e-cm-icons e-add'
-    //   },
-    //   {
-    //       text: 'Delete Column',
-    //       iconCss: 'e-cm-icons e-delete',
-    //   }];
+  @ViewChild('column_datatype')
+  public column_datatype!: DropDownListComponent;
+
+  @ViewChild('column_alignment')
+  public column_alignment!: DropDownListComponent;
+
+  public target: string = '.control-section';
+
+  public header: string = '';
+  public showCloseIcon: Boolean = true;
+  public width: string = '50%';
+
+  
+    
+
+  public data_types: Object[] = [
+    { name: 'Text' , value:'stringedit'},
+    { name: 'Num' , value:'numericedit'},
+    { name: 'Date', value:'datepickeredit' },
+    { name: 'Boolean', value:'boolean' },
+    { name: 'DropDownList',value:'DropDownList' },
+  ];
+
+  public column_alignments: Object[] = [
+    { name: 'Right' },
+    { name: 'Left' },
+    { name: 'Center' },
+  ];
+
+  public fields: Object = { text: 'name', value: 'value' };
+  public height: string = '220px';
+  public waterMark: string = 'Select a data type';
+  public value: string = '';
+
+  public alignment_fields: Object = { text: 'name', value: 'name' };
+  public alignment_height: string = '220px';
+  public alignment_waterMark: string = 'Select a data type';
+  public alignment_value: string = '';
 
   ngOnInit(): void {
+    
     this.data = sampleData;
     this.selectOptions = { type: 'Multiple' };
     this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog' };
@@ -71,7 +114,7 @@ export class AppComponent implements OnInit {
     this.filterSettings = { type: 'FilterBar', hierarchyMode: 'Parent', mode: 'Immediate' };
 
     this.contextMenuItems= [
-      { text: 'Add Column', target: '.e-headercontent', id: 'addcol' },
+      { text: 'Add Column', target: '.e-headercontent', id: 'addcol'},
       { text: 'Edit Column', target: '.e-headercontent', id: 'editcol' },
       { text: 'Delete Column', target: '.e-headercontent', id: 'delcol' },
     ]
@@ -82,6 +125,7 @@ export class AppComponent implements OnInit {
 
   contextMenuOpen (arg?: BeforeOpenCloseEventArgs): void {
     let elem: Element = arg?.event.target as Element;
+    
     // let row = elem.closest('.e-row');
     // let uid = row && row.getAttribute('data-uid');
     let items: Array<HTMLElement> = [].slice.call(document.querySelectorAll('.e-menu-item'));
@@ -92,23 +136,63 @@ export class AppComponent implements OnInit {
     }
     
     document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: block;');
-    document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: block;');
-    document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: block;');
     
+
+    elem.querySelectorAll('.e-headertext').forEach(e => {
+      console.log(e.textContent)
+      this.headerText = String(e.textContent);
+    })
+
+    if(this.headerText)
+    {
+      document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: block;');
+      document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: block;');
+    }
       
     
    
   }
 
   contextMenuClick (args?: MenuEventArgs): void {
-     if(args?.item.text == 'Add Column')
-     {
-       alert(args?.item.text)
-       this.columns.push({ field: 'status', headerText: 'Status', textAlign:'Right', format:'',width:'80', isPrimaryKey:'false', validationRules:'',editType:''})
-     }
-     else {
-       alert(args?.item.text)
-     }
+    if(args?.item.text == 'Add Column')
+    {
+    this.header = args?.item.text;
+    this.Dialog.show();
+      //alert(args?.item.text)
+      //this.columns.push({ field: 'status', headerText: 'Status', textAlign:'Right', format:'',width:'80', isPrimaryKey:'false', validationRules:'',editType:''})
+    }
+    else if(args?.item.text == 'Edit Column')
+    {
+
+    }
+    else {
+      alert(args?.item.text)
+    }
+  }
+
+  public onChange(args: any): void {
+    // let value: Element = document.getElementById('value');
+    // let text: Element = document.getElementById('text');
+    // // update the text and value property values in property panel based on selected item in DropDownList
+    // value.innerHTML = this.listObj.value.toString();
+    // text.innerHTML = this.listObj.text;
+  }
+
+  onSubmit()
+  {
+    //console.log(this.columnform.value)
+
+    if(this.columnform.status == 'INVALID')
+    {
+      return;
+    }
+    else
+    {
+      const value = this.columnform.value;
+      this.columns.push({ field: value.column_name.replace(/\s/g, "").toLowerCase(), headerText: value.column_name, textAlign:value.column_alignment, format:(value.column_type == 'datepickeredit' ? 'yMd' : ''),width:value.column_width, validationRules:'',editType:value.column_type})
+      this.Dialog.hide();
+      //console.log(this.columns)
+    }
   }
 
 }
