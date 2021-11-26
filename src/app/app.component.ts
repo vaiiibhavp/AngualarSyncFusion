@@ -8,7 +8,7 @@ import { DialogComponent, ButtonPropsModel } from '@syncfusion/ej2-angular-popup
 import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Column,RowSelectEventArgs } from '@syncfusion/ej2-angular-grids';
-
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
   columnform = new FormGroup({})
   rowform = new FormGroup({})
 
-  constructor(){
+  constructor(private sampleData: sampleData){
     this.columnform = new FormGroup({
       column_name : new FormControl('',[Validators.required]),
       column_type : new FormControl('',[Validators.required]),
@@ -118,8 +118,16 @@ export class AppComponent implements OnInit {
   public alignment_value: string = '';
 
   ngOnInit(): void {
-    
-    this.data = sampleData;
+    this.sampleData.getData()
+
+    .subscribe((data: any): void => {
+
+      this.data = data.data;
+
+      // console.log(this.data)
+
+
+    // this.data = sampleData;
     this.selectOptions = { type: 'Multiple' };
     this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog' };
     this.toolbar = ['Add', 'Edit', 'Delete','ColumnChooser'];
@@ -136,11 +144,11 @@ export class AppComponent implements OnInit {
       { text: 'Edit Column', target: '.e-headercontent', id: 'editcol' },
       { text: 'Delete Column', target: '.e-headercontent', id: 'delcol' },
       { text: 'Add Next', target: '.e-row', id: 'addnext' },
-      // { text: 'Add Child', target: '.e-row', id: 'addchild' },
+      { text: 'Add Child', target: '.e-row', id: 'addchild' },
       { text: 'Edit Row', target: '.e-row', id: 'editrow' },
       { text: 'Delete Row', target: '.e-row', id: 'deleterow' },
     ]  
-    
+  });
   }
 
   changeMultiSort(event:any)
@@ -199,6 +207,7 @@ export class AppComponent implements OnInit {
           document.querySelectorAll('li#addnext')[0].setAttribute('style', 'display: block;');
           document.querySelectorAll('li#editrow')[0].setAttribute('style', 'display: block;');
           document.querySelectorAll('li#deleterow')[0].setAttribute('style', 'display: block;');
+          document.querySelectorAll('li#addchild')[0].setAttribute('style', 'display: block;');
           document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: none;');
           document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: none;');
           document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: none;');
@@ -219,6 +228,11 @@ export class AppComponent implements OnInit {
       this.rowIndex = -1
       this.header = args?.item.text;
       this.rowDialog.show();
+    }else if(args?.item.text == 'Add Child')
+    {
+      this.rowIndex = 1
+      this.header = args?.item.text;
+      this.rowDialog.show();
     }
     else if(args?.item.text == 'Edit Column')
     {
@@ -237,6 +251,7 @@ export class AppComponent implements OnInit {
       this.Dialog.show();
     }else if(args?.item.text == 'Edit Row')
     {
+      this.rowIndex = 0
       this.header = args?.item.text;
       let selectedrowtodel = this.treegrid.getSelectedRows()[0]as HTMLTableRowElement
       let updatedate = selectedrowtodel.cells[4].innerHTML
@@ -326,12 +341,18 @@ export class AppComponent implements OnInit {
       if(this.rowIndex > -1)
       {        
         let selectedrowtodel = this.treegrid.getSelectedRows()[0]as HTMLTableRowElement
-        selectedrowtodel.cells[1].innerHTML = value.taskID
-        selectedrowtodel.cells[2].innerHTML = value.taskName
-        selectedrowtodel.cells[3].innerHTML = value.startDate
-        selectedrowtodel.cells[4].innerHTML = value.duration
-      }else{  
-        this.treegrid.addRecord(value, selectedrow);              
+        let datearr = value.startDate.split("-") 
+        let finaldate = `${datearr[2]}/${datearr[1]}/${datearr[0]}`
+        selectedrowtodel.cells[2].innerHTML = value.taskID
+        selectedrowtodel.cells[3].innerHTML = value.taskName
+        selectedrowtodel.cells[4].innerHTML = finaldate
+        selectedrowtodel.cells[5].innerHTML = value.duration
+      }
+      if(this.rowIndex == 1){
+        this.treegrid.addRecord(value, selectedrow+1);     
+      }
+      else{  
+        this.treegrid.addRecord(value, selectedrow+1);              
       }
       this.rowDialog.hide();
       this.rowIndex = -1

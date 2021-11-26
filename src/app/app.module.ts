@@ -10,21 +10,34 @@ import { AppComponent } from './app.component';
 import { ContextMenuModule  } from '@syncfusion/ej2-angular-navigations';
 import { DialogModule } from '@syncfusion/ej2-angular-popups';
 import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
-
+import { HttpClientModule,HttpClient } from '@angular/common/http';
+import { sampleData } from './datasource';
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
+
     BrowserModule,
+
     FormsModule,
+
     ReactiveFormsModule,
+
     TreeGridAllModule,
+
     AppRoutingModule,
+
     ContextMenuModule,
+
     CheckBoxModule,
+
     DialogModule,
-    DropDownListModule
+
+    DropDownListModule,
+
+    HttpClientModule
+
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
   providers: [
@@ -34,7 +47,9 @@ import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
     EditService,
     ToolbarService,
     FreezeService,
-    SelectionService
+    SelectionService,
+    sampleData,
+    HttpClient
     ],
   bootstrap: [AppComponent]
 })
