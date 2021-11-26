@@ -7,11 +7,11 @@
 
 <div class="control-section">
   <ul class="checkul">
-    <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
-    <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
-    <li class="checkli"><ejs-checkbox label="Default"></ejs-checkbox></li>
+    <li class="checkli"><ejs-checkbox label="FreezeCol"></ejs-checkbox></li>
+    <li class="checkli"><ejs-checkbox label="FilterCol" (change)="changeFilterColumn($event)"></ejs-checkbox></li>
+    <li class="checkli"><ejs-checkbox label="MultiSort" (change)="changeMultiSort($event)"></ejs-checkbox></li>
   </ul>
-  <ejs-treegrid  #treegrid [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' allowSorting='true' allowFiltering='true' [pageSettings]='pageSettings' 
+  <ejs-treegrid  #treegrid [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' [pageSettings]='pageSettings' 
   [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions'
   [showColumnChooser]='true' [contextMenuItems]='contextMenuItems' (contextMenuOpen)="contextMenuOpen($event)" (contextMenuClick)="contextMenuClick($event)">
     <e-columns >
@@ -62,47 +62,47 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
               <div class="e-float-input">
                 <input id="column_font_size" formControlName="column_font_size">
                 <span class="e-float-line"></span>
                 <label for="column_font_size" class="e-float-text">Font-size</label>
-                <!-- <div *ngIf="city.errors ">
+                <div *ngIf="city.errors ">
                   <div *ngIf="city.errors.required && city.touched"
                     class="e-error">
                     This field is required.
                   </div>
-                </div> -->
+                </div>
               </div>
-            </div>
+            </div> -->
 
-            <div class="form-group">
+            <!-- <div class="form-group">
               <div class="e-float-input">
                 <input ejs-colorpicker id='column_font_color' type='color' formControlName="column_font_color" />
                 <span class="e-float-line"></span>
                 <label for="column_font_color" class="e-float-text">Font-color</label>
-                <!-- <div *ngIf="state.errors ">
+                <div *ngIf="state.errors ">
                   <div *ngIf="state.errors.required && state.touched"
                     class="e-error">
                     This field is required.
                   </div>
-                </div> -->
+                </div> 
               </div>
-            </div>
+            </div> -->
 
-            <div class="form-group">
+            <!-- <div class="form-group">
               <div class="e-float-input">
                 <input ejs-colorpicker id='column_background_color' type='color' formControlName="column_background_color" />
                 <span class="e-float-line"></span>
                 <label for="column_background_color" class="e-float-text">Background-color</label>
-                <!-- <div *ngIf="state.errors ">
+               <div *ngIf="state.errors ">
                   <div *ngIf="state.errors.required && state.touched"
                     class="e-error">
                     This field is required.
                   </div>
-                </div> -->
+                </div> 
               </div>
-            </div>
+            </div> -->
 
             <div class="form-group">
               <div class="e-float-input">

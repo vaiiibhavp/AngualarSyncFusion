@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { sampleData } from './datasource';
-import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService} from '@syncfusion/ej2-angular-treegrid';
+import { TreeGridComponent, RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService,FreezeService} from '@syncfusion/ej2-angular-treegrid';
 import { getValue, isNullOrUndefined } from '@syncfusion/ej2-base';
 import { BeforeOpenCloseEventArgs } from '@syncfusion/ej2-inputs';
 import { ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/ej2-angular-navigations';
@@ -13,7 +13,7 @@ import { Column } from '@syncfusion/ej2-angular-grids';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService ]
+  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService,FreezeService ]
 })
 export class AppComponent implements OnInit {
   title = 'AngualarSyncFusion';
@@ -25,9 +25,9 @@ export class AppComponent implements OnInit {
       column_name : new FormControl('',[Validators.required]),
       column_type : new FormControl('',[Validators.required]),
       column_width : new FormControl('',[Validators.required]),
-      column_font_size : new FormControl(''),
-      column_font_color : new FormControl(''),
-      column_background_color : new FormControl(''),
+      // column_font_size : new FormControl(''),
+      // column_font_color : new FormControl(''),
+      // column_background_color : new FormControl(''),
       column_alignment : new FormControl('',Validators.required),
     })
   }
@@ -74,7 +74,8 @@ export class AppComponent implements OnInit {
   public showCloseIcon: Boolean = true;
   public width: string = '50%';
 
-  
+  public filtering: Boolean = false
+  public sorting: Boolean = false
     
 
   public data_types: Object[] = [
@@ -125,6 +126,30 @@ export class AppComponent implements OnInit {
     
   }
 
+  changeMultiSort(event:any)
+  {
+    if(event.checked)
+    {
+      this.treegrid.allowSorting = true;
+    }
+    else
+    {
+      this.treegrid.allowSorting = false;
+    }
+  }
+
+  changeFilterColumn(event:any)
+  {
+    if(event.checked)
+    {
+      this.treegrid.allowFiltering = true;
+    }
+    else
+    {
+      this.treegrid.allowFiltering = false;
+    }
+  }
+
   contextMenuOpen (arg?: BeforeOpenCloseEventArgs): void {
     let elem: Element = arg?.event.target as Element;
     
@@ -170,9 +195,9 @@ export class AppComponent implements OnInit {
         column_name : item?.headerText,
         column_type : item?.editType,
         column_width : item?.width,
-        column_font_size : '',
-        column_font_color : '',
-        column_background_color : '',
+        // column_font_size : '',
+        // column_font_color : '',
+        // column_background_color : '',
         column_alignment : item?.textAlign,
       })
       this.Dialog.show();
