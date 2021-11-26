@@ -7,6 +7,7 @@ import { ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/
 import { DialogComponent, ButtonPropsModel } from '@syncfusion/ej2-angular-popups';
 import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { Column } from '@syncfusion/ej2-angular-grids';
 
 @Component({
   selector: 'app-root',
@@ -24,9 +25,9 @@ export class AppComponent implements OnInit {
       column_name : new FormControl('',[Validators.required]),
       column_type : new FormControl('',[Validators.required]),
       column_width : new FormControl('',[Validators.required]),
-      column_font_size : new FormControl('',[Validators.required]),
-      column_font_color : new FormControl('',Validators.required),
-      column_background_color : new FormControl('',Validators.required),
+      column_font_size : new FormControl(''),
+      column_font_color : new FormControl(''),
+      column_background_color : new FormControl(''),
       column_alignment : new FormControl('',Validators.required),
     })
   }
@@ -45,6 +46,7 @@ export class AppComponent implements OnInit {
   public sortSettings!: Object;
   public contextMenuItems!: Object;
   headerText = ''
+  itemIndex = -1
   public columns = [
     { field: 'taskID', headerText: 'Task ID', textAlign:'Right', width:'40', fontSize: '200', format:'',editType:'' },
     { field: 'taskName', headerText: 'Task Name', textAlign:'Left', width:'200', format:'', editType:'stringedit'},
@@ -79,8 +81,8 @@ export class AppComponent implements OnInit {
     { name: 'Text' , value:'stringedit'},
     { name: 'Num' , value:'numericedit'},
     { name: 'Date', value:'datepickeredit' },
-    { name: 'Boolean', value:'boolean' },
-    { name: 'DropDownList',value:'DropDownList' },
+    { name: 'Boolean', value:'booleanedit' },
+    { name: 'DropDownList',value:'dropdownedit' },
   ];
 
   public column_alignments: Object[] = [
@@ -139,7 +141,6 @@ export class AppComponent implements OnInit {
     
 
     elem.querySelectorAll('.e-headertext').forEach(e => {
-      console.log(e.textContent)
       this.headerText = String(e.textContent);
     })
 
@@ -156,17 +157,31 @@ export class AppComponent implements OnInit {
   contextMenuClick (args?: MenuEventArgs): void {
     if(args?.item.text == 'Add Column')
     {
-    this.header = args?.item.text;
-    this.Dialog.show();
-      //alert(args?.item.text)
-      //this.columns.push({ field: 'status', headerText: 'Status', textAlign:'Right', format:'',width:'80', isPrimaryKey:'false', validationRules:'',editType:''})
+      this.itemIndex = -1
+      this.header = args?.item.text;
+      this.Dialog.show();
     }
     else if(args?.item.text == 'Edit Column')
     {
-
+      this.header = args?.item.text;
+      let item = this.columns.find(c => c.headerText == this.headerText)
+      this.itemIndex = this.columns.findIndex(item => item.headerText === this.headerText)
+      this.columnform.setValue({
+        column_name : item?.headerText,
+        column_type : item?.editType,
+        column_width : item?.width,
+        column_font_size : '',
+        column_font_color : '',
+        column_background_color : '',
+        column_alignment : item?.textAlign,
+      })
+      this.Dialog.show();
     }
     else {
-      alert(args?.item.text)
+      this.itemIndex = this.columns.findIndex(item => item.headerText === this.headerText)
+      this.columns.splice(this.itemIndex,1)
+      this.itemIndex = -1
+      //alert(args?.item.text)
     }
   }
 
@@ -189,9 +204,26 @@ export class AppComponent implements OnInit {
     else
     {
       const value = this.columnform.value;
-      this.columns.push({ field: value.column_name.replace(/\s/g, "").toLowerCase(), headerText: value.column_name, textAlign:value.column_alignment, format:(value.column_type == 'datepickeredit' ? 'yMd' : ''),width:value.column_width, validationRules:'',editType:value.column_type})
+      if(this.itemIndex > -1)
+      {
+        let column = this.treegrid.getColumnByField(this.columns[this.itemIndex].field)
+        column.headerText = value.column_name
+        column.textAlign = value.column_alignment
+        column.format = (value.column_type == 'datepickeredit' ? 'yMd' : '')
+        column.width = value.column_width
+        column.editType = value.column_type
+
+        this.columns[this.itemIndex] = { field: column.field, headerText: value.column_name, textAlign:value.column_alignment, format:(value.column_type == 'datepickeredit' ? 'yMd' : ''),width:value.column_width, validationRules:'',editType:value.column_type}
+        this.treegrid.refreshColumns()
+      }
+      else
+      {
+        this.columns.push({ field: value.column_name.replace(/\s/g, "").toLowerCase(), headerText: value.column_name, textAlign:value.column_alignment, format:(value.column_type == 'datepickeredit' ? 'yMd' : ''),width:value.column_width, validationRules:'',editType:value.column_type})
+      }
+      
       this.Dialog.hide();
-      //console.log(this.columns)
+      this.itemIndex = -1
+     
     }
   }
 
