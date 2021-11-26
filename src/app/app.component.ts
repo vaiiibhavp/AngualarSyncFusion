@@ -7,18 +7,20 @@ import { ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/
 import { DialogComponent, ButtonPropsModel } from '@syncfusion/ej2-angular-popups';
 import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { Column } from '@syncfusion/ej2-angular-grids';
+import { Column,RowSelectEventArgs } from '@syncfusion/ej2-angular-grids';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService,FreezeService ]
+  providers: [ RowDDService, SelectionService,ColumnChooserService,FilterService,SortService,EditService ]
 })
+
 export class AppComponent implements OnInit {
   title = 'AngualarSyncFusion';
-
+  // rowSelected:
   columnform = new FormGroup({})
+  rowform = new FormGroup({})
 
   constructor(){
     this.columnform = new FormGroup({
@@ -30,6 +32,14 @@ export class AppComponent implements OnInit {
       // column_background_color : new FormControl(''),
       column_alignment : new FormControl('',Validators.required),
     })
+
+    this.rowform = new FormGroup({
+      taskID : new FormControl('',[Validators.required]),
+      taskname : new FormControl('',[Validators.required]),
+      startdate : new FormControl('',[Validators.required]),
+      duration : new FormControl('',[Validators.required]),
+    })
+
   }
 
   public data: Object[] = [];
@@ -46,9 +56,12 @@ export class AppComponent implements OnInit {
   public sortSettings!: Object;
   public contextMenuItems!: Object;
   headerText = ''
+  rowText : any
   itemIndex = -1
+  rowIndex = -1
+  rows : any
   public columns = [
-    { field: 'taskID', headerText: 'Task ID', textAlign:'Right', width:'40', fontSize: '200', format:'',editType:'' },
+    { field: 'taskID', headerText: 'Task ID', textAlign:'Right', width:'40', fontSize: '200', format:'',editType:'rowEditing' },
     { field: 'taskName', headerText: 'Task Name', textAlign:'Left', width:'200', format:'', editType:'stringedit'},
     { field: 'startDate', headerText: 'Start Date', textAlign:'Right', format:'yMd',width:'90', validationRules:'',editType:'datepickeredit'},
     { field: 'duration', headerText: 'Duration', textAlign:'Right', format:'',width:'80', validationRules:'',editType:'stringedit'}
@@ -62,6 +75,9 @@ export class AppComponent implements OnInit {
   @ViewChild('Dialog')
   public Dialog!: DialogComponent;
 
+  @ViewChild('rowDialog')
+  public rowDialog!: DialogComponent;
+
   @ViewChild('column_datatype')
   public column_datatype!: DropDownListComponent;
 
@@ -72,11 +88,10 @@ export class AppComponent implements OnInit {
 
   public header: string = '';
   public showCloseIcon: Boolean = true;
-  public width: string = '50%';
-
+  public width: string = '50%'; 
+    
   public filtering: Boolean = false
   public sorting: Boolean = false
-    
 
   public data_types: Object[] = [
     { name: 'Text' , value:'stringedit'},
@@ -120,9 +135,11 @@ export class AppComponent implements OnInit {
       { text: 'Add Column', target: '.e-headercontent', id: 'addcol'},
       { text: 'Edit Column', target: '.e-headercontent', id: 'editcol' },
       { text: 'Delete Column', target: '.e-headercontent', id: 'delcol' },
-    ]
-
-    
+      { text: 'Add Next', target: '.e-row', id: 'addnext' },
+      // { text: 'Add Child', target: '.e-row', id: 'addchild' },
+      { text: 'Edit Row', target: '.e-row', id: 'editrow' },
+      { text: 'Delete Row', target: '.e-row', id: 'deleterow' },
+    ]  
     
   }
 
@@ -149,34 +166,46 @@ export class AppComponent implements OnInit {
       this.treegrid.allowFiltering = false;
     }
   }
-
   contextMenuOpen (arg?: BeforeOpenCloseEventArgs): void {
     let elem: Element = arg?.event.target as Element;
+    console.log(elem)
     
-    // let row = elem.closest('.e-row');
+    let row = elem.closest('.e-row');
+    // console.log(row)
     // let uid = row && row.getAttribute('data-uid');
+
+    if(row == null){
     let items: Array<HTMLElement> = [].slice.call(document.querySelectorAll('.e-menu-item'));
     //console.log(items)
    
     for (let i: number = 0; i < items.length; i++) {
       items[i].setAttribute('style','display: none;');
-    }
-    
-    document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: block;');
-    
-
-    elem.querySelectorAll('.e-headertext').forEach(e => {
-      this.headerText = String(e.textContent);
-    })
-
-    if(this.headerText)
-    {
-      document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: block;');
-      document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: block;');
-    }
+    }    
+    document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: block;');  
+      elem.querySelectorAll('.e-headertext').forEach(e => {
+        this.headerText = String(e.textContent);
+      })
+      if(this.headerText)
+      {
+        document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: block;');
+        document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: block;');
+      }
       
-    
-   
+    }else{
+      // elem.querySelectorAll('.e-headertext').forEach(e => {
+        this.rowText = String(row.textContent);
+        if(this.rowText)
+        {
+          document.querySelectorAll('li#addnext')[0].setAttribute('style', 'display: block;');
+          document.querySelectorAll('li#editrow')[0].setAttribute('style', 'display: block;');
+          document.querySelectorAll('li#deleterow')[0].setAttribute('style', 'display: block;');
+          document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: none;');
+          document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: none;');
+          document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: none;');
+        }
+        // console.log(this.rowText)
+      // })
+    }    
   }
 
   contextMenuClick (args?: MenuEventArgs): void {
@@ -185,6 +214,11 @@ export class AppComponent implements OnInit {
       this.itemIndex = -1
       this.header = args?.item.text;
       this.Dialog.show();
+    }else if(args?.item.text == 'Add Next')
+    {
+      this.rowIndex = -1
+      this.header = args?.item.text;
+      this.rowDialog.show();
     }
     else if(args?.item.text == 'Edit Column')
     {
@@ -195,18 +229,45 @@ export class AppComponent implements OnInit {
         column_name : item?.headerText,
         column_type : item?.editType,
         column_width : item?.width,
-        // column_font_size : '',
-        // column_font_color : '',
-        // column_background_color : '',
+        column_font_size : '',
+        column_font_color : '',
+        column_background_color : '',
         column_alignment : item?.textAlign,
       })
       this.Dialog.show();
+    }else if(args?.item.text == 'Edit Row')
+    {
+      this.header = args?.item.text;
+      let selectedrowtodel = this.treegrid.getSelectedRows()[0]as HTMLTableRowElement
+      let updatedate = selectedrowtodel.cells[4].innerHTML
+      let datearr = updatedate.split("/")
+        if(parseInt(datearr[0])<10) 
+      {
+        datearr[0]='0'+datearr[0];
+      } 
+
+      if(parseInt(datearr[1])<10) 
+      {
+        datearr[1]='0'+datearr[1];
+      }
+      let finaldate = `${datearr[2]}-${datearr[1]}-${datearr[0]}`
+      this.rowform.setValue({
+        taskID: selectedrowtodel.cells[2].innerText,
+        taskname: selectedrowtodel.cells[3].innerText,
+        startdate: finaldate,
+        duration: selectedrowtodel.cells[5].innerText,
+      })
+      this.rowDialog.show();
+    }else if(args?.item.text == 'Delete Row')
+    {
+      let selectedrowtodel = this.treegrid.getSelectedRows()[0] as HTMLTableRowElement
+      this.rowIndex = -1
+      this.treegrid.deleteRow(selectedrowtodel)
     }
     else {
       this.itemIndex = this.columns.findIndex(item => item.headerText === this.headerText)
       this.columns.splice(this.itemIndex,1)
       this.itemIndex = -1
-      //alert(args?.item.text)
     }
   }
 
@@ -220,8 +281,6 @@ export class AppComponent implements OnInit {
 
   onSubmit()
   {
-    //console.log(this.columnform.value)
-
     if(this.columnform.status == 'INVALID')
     {
       return;
@@ -252,4 +311,33 @@ export class AppComponent implements OnInit {
     }
   }
 
+  onrowSubmit(){
+    let selectedrow = this.treegrid.getSelectedRowIndexes()[0]
+    if(this.rowform.status == 'INVALID')
+    {
+      return;
+    }else{
+      var value =  { 
+        taskID: this.rowform.value.taskID,
+         taskName: this.rowform.value.taskname,
+         startDate: this.rowform.value.startdate,
+         duration: this.rowform.value.duration,
+      }; 
+      if(this.rowIndex > -1)
+      {        
+        let selectedrowtodel = this.treegrid.getSelectedRows()[0]as HTMLTableRowElement
+        selectedrowtodel.cells[1].innerHTML = value.taskID
+        selectedrowtodel.cells[2].innerHTML = value.taskName
+        selectedrowtodel.cells[3].innerHTML = value.startDate
+        selectedrowtodel.cells[4].innerHTML = value.duration
+      }else{  
+        this.treegrid.addRecord(value, selectedrow);              
+      }
+      this.rowDialog.hide();
+      this.rowIndex = -1
+    }
+  }
+
 }
+
+

@@ -11,10 +11,11 @@
     <li class="checkli"><ejs-checkbox label="FilterCol" (change)="changeFilterColumn($event)"></ejs-checkbox></li>
     <li class="checkli"><ejs-checkbox label="MultiSort" (change)="changeMultiSort($event)"></ejs-checkbox></li>
   </ul>
-  <ejs-treegrid  #treegrid [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks' [pageSettings]='pageSettings' 
+  <ejs-treegrid  #treegrid [dataSource]='data' height='500' [treeColumnIndex]='1' childMapping='subtasks'  [pageSettings]='pageSettings' 
   [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions'
   [showColumnChooser]='true' [contextMenuItems]='contextMenuItems' (contextMenuOpen)="contextMenuOpen($event)" (contextMenuClick)="contextMenuClick($event)">
     <e-columns >
+      <e-column type='checkbox' width='50'></e-column>
       <e-column field='{{column.field}}' headerText='{{column.headerText}}'  textAlign='{{column.textAlign}}' width='{{column.width}}' [validationRules]='column.validationRules' format='{{column.format}}' editType ='{{column.editType}}' *ngFor="let column of columns"></e-column>
       <!-- <e-column field='taskID' headerText='Task ID'  textAlign='Right' width='40' isPrimaryKey='true' [validationRules]='orderidrules'></e-column>
       <e-column field='taskName' headerText='Task Name' textAlign='Left' width='200' [validationRules]='customeridrules'></e-column>
@@ -62,7 +63,7 @@
               </div>
             </div>
 
-            <!-- <div class="form-group">
+           <!--  <div class="form-group">
               <div class="e-float-input">
                 <input id="column_font_size" formControlName="column_font_size">
                 <span class="e-float-line"></span>
@@ -81,6 +82,20 @@
                 <input ejs-colorpicker id='column_font_color' type='color' formControlName="column_font_color" />
                 <span class="e-float-line"></span>
                 <label for="column_font_color" class="e-float-text">Font-color</label>
+               <div *ngIf="state.errors ">
+                  <div *ngIf="state.errors.required && state.touched"
+                    class="e-error">
+                    This field is required.
+                  </div>
+                </div>
+              </div>
+            </div> -->
+
+             <!--<div class="form-group">
+              <div class="e-float-input">
+                <input ejs-colorpicker id='column_background_color' type='color' formControlName="column_background_color" />
+                <span class="e-float-line"></span>
+                <label for="column_background_color" class="e-float-text">Background-color</label>
                 <div *ngIf="state.errors ">
                   <div *ngIf="state.errors.required && state.touched"
                     class="e-error">
@@ -88,21 +103,7 @@
                   </div>
                 </div> 
               </div>
-            </div> -->
-
-            <!-- <div class="form-group">
-              <div class="e-float-input">
-                <input ejs-colorpicker id='column_background_color' type='color' formControlName="column_background_color" />
-                <span class="e-float-line"></span>
-                <label for="column_background_color" class="e-float-text">Background-color</label>
-               <div *ngIf="state.errors ">
-                  <div *ngIf="state.errors.required && state.touched"
-                    class="e-error">
-                    This field is required.
-                  </div>
-                </div> 
-              </div>
-            </div> -->
+            </div>-->
 
             <div class="form-group">
               <div class="e-float-input">
@@ -135,4 +136,58 @@
           </div>
         </ng-template>
     </ejs-dialog>
+
+
+  <ejs-dialog #rowDialog [header]='header' [visible]='false' [showCloseIcon]='showCloseIcon' [target]='target' [width]='width'>
+    <ng-template #content>
+      <div class="content-wrapper" style="margin-bottom: 25px;">
+        <form id="formId" (ngSubmit)="onrowSubmit()" [formGroup]="rowform" class="form-horizontal" novalidate="">
+        <div class="form-group">
+          <div class="e-float-input">
+            <input id="taskID" type="text" formControlName="taskID">
+            <span class="e-float-line"></span>
+            <label for="taskID" class="e-float-text">Task ID</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="e-float-input">            
+            <input id="taskname" type="text" formControlName="taskname">
+            <span class="e-float-line"></span>
+            <label for="taskname" class="e-float-text">Task Name</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="e-float-input">            
+            <input id="startdate" type="date" formControlName="startdate">
+            <span class="e-float-line"></span>
+            <label for="startdate" class="e-float-text">Start Date</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="e-float-input">            
+            <input id="duration" type="text" formControlName="duration">
+            <span class="e-float-line"></span>
+            <label for="duration" class="e-float-text">Duration</label>
+          </div>
+        </div>   
+
+        <div class="row">
+          <div
+            style="width: 320px;margin:0px auto;height: 100px;padding-top: 25px;">
+            <div style="display: inline-block;">
+              <button id="validateSubmit"
+                class="samplebtn e-control e-btn e-primary" type="submit"
+                style="height:40px;width: 150px;" data-ripple="true">{{header}}</button>
+            </div>       
+          </div>
+        </div>
+      </form>
+      </div>
+    </ng-template>
+
+  </ejs-dialog>
+
 </div>
