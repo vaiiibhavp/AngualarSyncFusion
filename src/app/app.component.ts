@@ -9,6 +9,7 @@ import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Column,RowSelectEventArgs } from '@syncfusion/ej2-angular-grids';
 import { HttpClient } from '@angular/common/http';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -44,7 +45,7 @@ export class AppComponent implements OnInit {
 
   public data: Object[] = [];
   public editSettings!: Object;
-  public toolbar!: string[];
+  public toolbar!: any;
   public orderidrules!: Object;
   public customeridrules!: Object;
   public freightrules!: Object;
@@ -60,6 +61,7 @@ export class AppComponent implements OnInit {
   itemIndex = -1
   rowIndex = -1
   rows : any
+  copied = 0
   public columns = [
     { field: 'taskID', headerText: 'Task ID', textAlign:'Right', width:'40', fontSize: '200', format:'',editType:'rowEditing' },
     { field: 'taskName', headerText: 'Task Name', textAlign:'Left', width:'200', format:'', editType:'stringedit'},
@@ -119,18 +121,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.sampleData.getData()
-
     .subscribe((data: any): void => {
-
       this.data = data.data;
-
-      // console.log(this.data)
-
-
-    // this.data = sampleData;
     this.selectOptions = { type: 'Multiple' };
     this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog' };
-    this.toolbar = ['Add', 'Edit', 'Delete','ColumnChooser'];
+    this.toolbar = ['Add', 'Edit', 'Delete','ColumnChooser'
+    // , { text: 'Copy', tooltipText: 'Copy', prefixIcon: 'e-copy', id: 'copy'}
+   ];
     this.orderidrules = { required: true, number: true };
     this.customeridrules = { required: true };
     this.freightrules =  { required: true };
@@ -147,6 +144,10 @@ export class AppComponent implements OnInit {
       { text: 'Add Child', target: '.e-row', id: 'addchild' },
       { text: 'Edit Row', target: '.e-row', id: 'editrow' },
       { text: 'Delete Row', target: '.e-row', id: 'deleterow' },
+      { text: 'Copy Rows', target: '.e-row', id: 'copyrows' },
+      { text: 'Cut Rows', target: '.e-row', id: 'cutrows' },
+      { text: 'Paste Next', target: '.e-row', id: 'pastenext' },
+      { text: 'Paste Child', target: '.e-row', id: 'pastechild' },
     ]  
   });
   }
@@ -174,33 +175,30 @@ export class AppComponent implements OnInit {
       this.treegrid.allowFiltering = false;
     }
   }
-  contextMenuOpen (arg?: BeforeOpenCloseEventArgs): void {
-    let elem: Element = arg?.event.target as Element;
-    console.log(elem)
-    
-    let row = elem.closest('.e-row');
-    // console.log(row)
-    // let uid = row && row.getAttribute('data-uid');
 
+
+  contextMenuOpen (arg?: BeforeOpenCloseEventArgs): void {
+    let elem: Element = arg?.event.target as Element;  
+    let row = elem.closest('.e-row');
+    // let uid = row && row.getAttribute('data-uid');
     if(row == null){
     let items: Array<HTMLElement> = [].slice.call(document.querySelectorAll('.e-menu-item'));
-    //console.log(items)
    
     for (let i: number = 0; i < items.length; i++) {
       items[i].setAttribute('style','display: none;');
     }    
-    document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: block;');  
+    
       elem.querySelectorAll('.e-headertext').forEach(e => {
         this.headerText = String(e.textContent);
       })
       if(this.headerText)
       {
+        document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: block;');  
         document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: block;');
         document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: block;');
       }
       
     }else{
-      // elem.querySelectorAll('.e-headertext').forEach(e => {
         this.rowText = String(row.textContent);
         if(this.rowText)
         {
@@ -208,12 +206,21 @@ export class AppComponent implements OnInit {
           document.querySelectorAll('li#editrow')[0].setAttribute('style', 'display: block;');
           document.querySelectorAll('li#deleterow')[0].setAttribute('style', 'display: block;');
           document.querySelectorAll('li#addchild')[0].setAttribute('style', 'display: block;');
+          document.querySelectorAll('li#copyrows')[0].setAttribute('style', 'display: block;');
+          document.querySelectorAll('li#cutrows')[0].setAttribute('style', 'display: block;');
           document.querySelectorAll('li#editcol')[0].setAttribute('style', 'display: none;');
           document.querySelectorAll('li#delcol')[0].setAttribute('style', 'display: none;');
-          document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: none;');
+          document.querySelectorAll('li#addcol')[0].setAttribute('style', 'display: none;');  
+          let allselectedrows = this.treegrid.getSelectedRows()
+          if(this.copied > 0){
+            document.querySelectorAll('li#pastenext')[0].setAttribute('style', 'display: block;');
+            document.querySelectorAll('li#pastechild')[0].setAttribute('style', 'display: block;');
+          }else{
+            document.querySelectorAll('li#pastenext')[0].setAttribute('style', 'display: none;');
+            document.querySelectorAll('li#pastechild')[0].setAttribute('style', 'display: none;');
+
+          }
         }
-        // console.log(this.rowText)
-      // })
     }    
   }
 
@@ -278,6 +285,19 @@ export class AppComponent implements OnInit {
       let selectedrowtodel = this.treegrid.getSelectedRows()[0] as HTMLTableRowElement
       this.rowIndex = -1
       this.treegrid.deleteRow(selectedrowtodel)
+    }else if(args?.item.text == 'Copy Rows'){
+      this.copied = 1
+      //show paste option
+    }else if(args?.item.text == 'Cut Rows'){
+      this.copied = 1
+       //show paste option
+    }else if(args?.item.text == 'Paste Next'){
+      let allselectedrows = this.treegrid.getSelectedRows()
+      this.copied = 0
+      //hide paste option
+    }else if(args?.item.text == 'Paste Child'){
+      let allselectedrows = this.treegrid.getSelectedRows()
+      this.copied = 0
     }
     else {
       this.itemIndex = this.columns.findIndex(item => item.headerText === this.headerText)
@@ -354,6 +374,12 @@ export class AppComponent implements OnInit {
       else{  
         this.treegrid.addRecord(value, selectedrow+1);              
       }
+
+       this.rowform.value.taskID = ''
+       this.rowform.value.taskname = ''
+       this.rowform.value.startdate = ''
+       this.rowform.value.duration = ''
+
       this.rowDialog.hide();
       this.rowIndex = -1
     }
