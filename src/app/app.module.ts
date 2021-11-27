@@ -11,7 +11,7 @@ import { ContextMenuModule  } from '@syncfusion/ej2-angular-navigations';
 import { DialogModule } from '@syncfusion/ej2-angular-popups';
 import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
 import { HttpClientModule,HttpClient } from '@angular/common/http';
-import { sampleData } from './datasource';
+// import { sampleData } from './datasource';
 @NgModule({
   declarations: [
     AppComponent
@@ -48,7 +48,7 @@ import { sampleData } from './datasource';
     ToolbarService,
     FreezeService,
     SelectionService,
-    sampleData,
+    // sampleData,
     HttpClient
     ],
   bootstrap: [AppComponent]

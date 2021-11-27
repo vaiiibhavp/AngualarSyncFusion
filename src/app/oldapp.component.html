@@ -1,0 +1,200 @@
+<!-- <div class="contextmenu-section">
+  <div id="contextmenu-control">
+      <div id="contextmenutarget">Column Header</div>
+      <ejs-contextmenu #contextmenu target='#contextmenutarget' [items]='menuItems'>Column Header</ejs-contextmenu>
+  </div>
+</div>[frozenRows]='3' -->
+
+<div class="control-section">
+  <ul class="checkul">
+    <li class="checkli"><ejs-checkbox label="FreezeCol"></ejs-checkbox></li>
+    <li class="checkli"><ejs-checkbox label="FilterCol" (change)="changeFilterColumn($event)"></ejs-checkbox></li>
+    <li class="checkli"><ejs-checkbox label="MultiSort" (change)="changeMultiSort($event)"></ejs-checkbox></li>
+  </ul>
+  <ejs-treegrid  #treegrid [dataSource]='data' height='550' [treeColumnIndex]='1' childMapping='subtasks'  [pageSettings]='pageSettings' 
+  [filterSettings]='filterSettings' [editSettings]='editSettings' [toolbar]='toolbar' [allowRowDragAndDrop]='true' [selectionSettings]='selectOptions' [showColumnChooser]='true' [contextMenuItems]='contextMenuItems' (contextMenuOpen)="contextMenuOpen($event)" (contextMenuClick)="contextMenuClick($event)" [allowSelection]='false' [enableHover]='false' >
+
+    <!-- <ng-template #toolbarTemplate let-data>
+		<ejs-toolbar (created)="onCreate($event)">
+        <e-items>
+          <e-item template='<input type="text" tabindex="1" id="ddlelement" />' type='Input'></e-item>
+        </e-items>
+      </ejs-toolbar>
+    </ng-template>   -->
+    <e-columns >
+      <e-column type='checkbox' width='50'></e-column>
+      <e-column field='{{column.field}}' headerText='{{column.headerText}}'  textAlign='{{column.textAlign}}' width='{{column.width}}' [validationRules]='column.validationRules' format='{{column.format}}' editType ='{{column.editType}}' *ngFor="let column of columns"></e-column>
+      <!-- <e-column field='taskID' headerText='Task ID'  textAlign='Right' width='40' isPrimaryKey='true' [validationRules]='orderidrules'></e-column>
+      <e-column field='taskName' headerText='Task Name' textAlign='Left' width='200' [validationRules]='customeridrules'></e-column>
+      <e-column field='startDate' headerText='Start Date' textAlign='Right' format='yMd' width='90' editType='datepickeredit'></e-column>
+      <e-column field='duration' headerText='Duration' textAlign='Right' width='80'></e-column> -->
+    </e-columns>
+  </ejs-treegrid>
+
+  <ejs-dialog #Dialog [header]='header' [visible]='false' [showCloseIcon]='showCloseIcon' [target]='target' [width]='width'>
+        <ng-template #content>
+          <div class="content-wrapper" style="margin-bottom: 25px;">
+            <form id="formId" (ngSubmit)="onSubmit()" [formGroup]="columnform" class="form-horizontal" novalidate="" autocomplete="off">
+            <div class="form-group">
+              <div class="e-float-input">
+                <input id="column_name" type="text" formControlName="column_name">
+                <span class="e-float-line"></span>
+                <label for="column_name" class="e-float-text">Column Name</label>
+              </div>
+              <!-- <div *ngIf="check.errors">
+                <div *ngIf="check.errors.required && check.touched" class="e-error">
+                  This field is required.
+                </div>
+              </div> -->
+            </div>
+
+            <div class="form-group">
+              <div class="e-float-input">
+                
+                <ejs-dropdownlist id='column_type' formControlName="column_type" #column_datatype [dataSource]='data_types' (change)='onChange($event)' [value]='value' [fields]='fields' [placeholder]='waterMark' [popupHeight]='height'></ejs-dropdownlist>
+                
+                <!-- <div *ngIf="date_check.errors ">
+                  <div *ngIf="date_check.errors.date && date_check.touched"
+                    class="e-error">
+                    Please enter a valid date.
+                  </div>
+                </div> -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="e-float-input">
+                <input id="column_width" type="text" formControlName="column_width">
+                <span class="e-float-line"></span>
+                <label for="column_width" class="e-float-text">Width</label>
+              </div>
+            </div>
+
+           <!--  <div class="form-group">
+              <div class="e-float-input">
+                <input id="column_font_size" formControlName="column_font_size">
+                <span class="e-float-line"></span>
+                <label for="column_font_size" class="e-float-text">Font-size</label>
+                <div *ngIf="city.errors ">
+                  <div *ngIf="city.errors.required && city.touched"
+                    class="e-error">
+                    This field is required.
+                  </div>
+                </div>
+              </div>
+            </div> -->
+
+            <!-- <div class="form-group">
+              <div class="e-float-input">
+                <input ejs-colorpicker id='column_font_color' type='color' formControlName="column_font_color" />
+                <span class="e-float-line"></span>
+                <label for="column_font_color" class="e-float-text">Font-color</label>
+               <div *ngIf="state.errors ">
+                  <div *ngIf="state.errors.required && state.touched"
+                    class="e-error">
+                    This field is required.
+                  </div>
+                </div>
+              </div>
+            </div> -->
+
+             <!--<div class="form-group">
+              <div class="e-float-input">
+                <input ejs-colorpicker id='column_background_color' type='color' formControlName="column_background_color" />
+                <span class="e-float-line"></span>
+                <label for="column_background_color" class="e-float-text">Background-color</label>
+                <div *ngIf="state.errors ">
+                  <div *ngIf="state.errors.required && state.touched"
+                    class="e-error">
+                    This field is required.
+                  </div>
+                </div> 
+              </div>
+            </div>-->
+
+            <div class="form-group">
+              <div class="e-float-input">
+                <ejs-dropdownlist id='column_alignment' formControlName="column_alignment" #column_alignment [dataSource]='column_alignments' (change)='onChange($event)' [value]='alignment_value' [fields]='alignment_fields' [placeholder]='alignment_waterMark' [popupHeight]='alignment_height'></ejs-dropdownlist>
+                <!-- <div *ngIf="state.errors ">
+                  <div *ngIf="state.errors.required && state.touched"
+                    class="e-error">
+                    This field is required.
+                  </div>
+                </div> -->
+              </div>
+            </div>
+
+            <div class="row">
+              <div
+                style="width: 320px;margin:0px auto;height: 100px;padding-top: 25px;">
+                <div style="display: inline-block;">
+                  <button id="validateSubmit"
+                    class="samplebtn e-control e-btn e-primary" type="submit"
+                    style="height:40px;width: 150px;" data-ripple="true">{{header}}</button>
+                </div>
+                <div style="float: right;">
+                  <button id="resetbtn" class="samplebtn e-control e-btn"
+                    type="reset" style="height:40px;width: 150px;"
+                    data-ripple="true">Clear</button>
+                </div>
+              </div>
+            </div>
+          </form>
+          </div>
+        </ng-template>
+    </ejs-dialog>
+
+
+  <ejs-dialog #rowDialog [header]='header' [visible]='false' [showCloseIcon]='showCloseIcon' [target]='target' [width]='width'>
+    <ng-template #content>
+      <div class="content-wrapper" style="margin-bottom: 25px;">
+        <form id="formId" (ngSubmit)="onrowSubmit()" [formGroup]="rowform" class="form-horizontal" novalidate="" autocomplete="off">
+        <div class="form-group">
+          <div class="e-float-input">
+            <input id="taskID" type="text" formControlName="taskID">
+            <span class="e-float-line"></span>
+            <label for="taskID" class="e-float-text">Task ID</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="e-float-input">            
+            <input id="taskname" type="text" formControlName="taskname">
+            <span class="e-float-line"></span>
+            <label for="taskname" class="e-float-text">Task Name</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="e-float-input">            
+            <input id="startdate" type="date" formControlName="startdate">
+            <span class="e-float-line"></span>
+            <label for="startdate" class="e-float-text">Start Date</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="e-float-input">            
+            <input id="duration" type="text" formControlName="duration">
+            <span class="e-float-line"></span>
+            <label for="duration" class="e-float-text">Duration</label>
+          </div>
+        </div>   
+
+        <div class="row">
+          <div
+            style="width: 320px;margin:0px auto;height: 100px;padding-top: 25px;">
+            <div style="display: inline-block;">
+              <button id="validateSubmit"
+                class="samplebtn e-control e-btn e-primary" type="submit"
+                style="height:40px;width: 150px;" data-ripple="true">{{header}}</button>
+            </div>       
+          </div>
+        </div>
+      </form>
+      </div>
+    </ng-template>
+
+  </ejs-dialog>
+
+</div>
